@@ -1,0 +1,35 @@
+type Query{
+    user(user_id:ID):User,
+    users:[User]
+}
+
+
+type Mutation{
+    signup(username:String, email:String, password:String, isAdmin:Boolean, file:Upload):Req
+    signin(username:String, email:String, password:String):Req
+    updateuser(username:String, email:String, password:String, file:Upload):Req
+    deletuser(user_id:ID):Req
+}
+
+
+
+type User{
+    user_id:ID
+    username:String
+    email:String
+    password:String
+    img:String
+    isAdmin:Boolean
+}
+
+
+type Req{
+    msg:String
+    data:Any
+}
+
+scalar Any
+
+scalar Upload
+
+ 

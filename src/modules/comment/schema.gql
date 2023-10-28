@@ -1,0 +1,23 @@
+type Query{
+    comments:[Comment]
+}
+
+
+type Mutation{
+    createcomment(product_id:ID, title:String):Req
+    editcomment(comment_id:ID, title:String):Req
+    deletcomment(comment_id:ID):Req
+}
+
+
+type Comment{
+    comment_id:ID
+    title:String
+}
+
+type Req{
+    msg:String
+    data:Any
+}
+
+scalar Any

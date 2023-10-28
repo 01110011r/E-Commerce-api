@@ -1,0 +1,21 @@
+type Query{
+    buy(buy_id:ID):Buy
+}
+
+
+
+
+
+type Mutation{
+    addbuy(product_id:ID):Req
+    deletbuy(buy_id:ID):Req
+}
+
+
+
+
+type Buy{
+    buy_id:ID
+    user_id:ID
+    product_id:ID
+}

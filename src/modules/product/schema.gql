@@ -1,0 +1,31 @@
+type Query{
+    product(product_id:ID):Product
+    products:[Product]
+}
+
+
+type Mutation{
+    addproduct(product_name:String, price:Int, measurement:String, quantity:Int, category_id:ID, file:Upload):Req
+    editproduct(product_id:ID,product_name:String, price:Int, measurement:String, quantity:Int, category_id:ID, file:Upload):Req
+    deletproduct(product_id:ID):Req
+}
+
+
+type Product{
+    product_id:ID
+    product_name:String
+    price:Int
+    measurement:String
+    quantity:Int
+    category_id:ID
+}
+
+
+type Req{
+    msg:String
+    data:Any
+}
+
+scalar Any
+
+scalar Upload
