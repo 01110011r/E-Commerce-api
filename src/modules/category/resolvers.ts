@@ -35,10 +35,8 @@ export default {
         // categories
         categories: async () => {
             try {
-                console.log('ok');
                 
                 const find = await CategoryModel.findAll();
-                console.log(find);
                 
                 return find;
             } catch (error: any) {
