@@ -6,7 +6,7 @@ type Query{
 
 type Mutation{
     signup(username:String!, email:String!, password:String!, isAdmin:Boolean, file:Upload!):Req
-    signin(username:String, email:String, password:String):Req
+    signin(username:String!, email:String!, password:String!):Req
     updateuser(username:String, email:String, password:String, file:Upload):Req
     deletuser(user_id:ID):Req
 }

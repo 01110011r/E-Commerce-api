@@ -160,6 +160,8 @@ console.log(username, file);
         // signin
         signin: async (root: undefined, { username, email, password }: UserType) => {
             try {
+                console.log(username);
+                
                 const find = await UserModel.findOne({ where: { username, email } }) as any;
 
                 if (!find) {
