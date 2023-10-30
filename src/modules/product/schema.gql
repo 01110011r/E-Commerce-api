@@ -1,5 +1,5 @@
 type Query{
-    product(product_id:ID):Product
+    product(product_id:ID!):Product
     products:[Product]
 }
 

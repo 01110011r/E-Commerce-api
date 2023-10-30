@@ -7,6 +7,8 @@ export default {
     Query: {
         category: async (_: undefined, { category_id }: CategoryType) => {
             try {
+                console.log(category_id);
+                
                 const find = await CategoryModel.findOne({ where: { category_id }, include: ProductModel });
                 if (!find) return new GraphQLError("category notfound", {
                     extensions: {
@@ -16,6 +18,8 @@ export default {
                         }
                     }
                 });
+                console.log(find);
+                
                 return find;
             } catch (error: any) {
                 console.log(error.message);

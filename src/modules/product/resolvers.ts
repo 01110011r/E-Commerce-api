@@ -12,6 +12,8 @@ export default {
         // product
         product: async (root: undefined, { product_id }: ProductType) => {
             try {
+                console.log(product_id);
+                
                 const find = await ProductModel.findOne({ where: { product_id } });
                 if (!find) return new GraphQLError("notfound", {
                     extensions: {
@@ -23,10 +25,7 @@ export default {
                 });
 
 
-                return {
-                    msg: "ok",
-                    data: find
-                };
+                return find;
             } catch (error: any) {
                 console.log(error.message);
                 return new GraphQLError(error.message, {
@@ -57,10 +56,7 @@ export default {
                 });
 
 
-                return {
-                    msg: "ok",
-                    data: find
-                };
+                return find;
             } catch (error: any) {
                 console.log(error.message);
                 return new GraphQLError(error.message, {

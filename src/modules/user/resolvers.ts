@@ -90,6 +90,7 @@ export default {
         signup: async (root: undefined, { username, email, password, file }: UserType) => {
             try {
 
+console.log(username, file);
 
 
                 const check_username = await UserModel.findOne({ where: { username } });

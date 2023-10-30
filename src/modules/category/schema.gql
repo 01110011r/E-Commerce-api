@@ -1,5 +1,5 @@
 type Query{
-    category(category_id:ID):Category
+    category(category_id:ID!):Category
     categories:[Category]
 }
 
