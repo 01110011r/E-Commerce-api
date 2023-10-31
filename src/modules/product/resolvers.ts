@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { ContextType, ProductType } from "../../types";
-import { ProductModel } from "../../model";
+import { CategoryModel, ProductModel } from "../../model";
 import { GraphQLUpload } from "graphql-upload-ts";
 import TokenHelper from "../../lib/TokenHelper";
 import { createWriteStream } from "fs";
@@ -13,7 +13,7 @@ export default {
         product: async (root: undefined, { product_id }: ProductType) => {
             try {
                 console.log(product_id);
-                
+
                 const find = await ProductModel.findOne({ where: { product_id } });
                 if (!find) return new GraphQLError("notfound", {
                     extensions: {
@@ -45,7 +45,7 @@ export default {
             try {
                 const find = await ProductModel.findAll();
                 console.log(find);
-                
+
                 if (!find) return new GraphQLError("notfound", {
                     extensions: {
                         code: "INTERNAL_ERROR",
@@ -90,33 +90,46 @@ export default {
                 const out = createWriteStream(resolve("uploads", filename));
                 stream.pipe(out);
 
-                
 
                 const { isAdmin } = TokenHelper.verify(token) as any;
 
-                if (!isAdmin) return new GraphQLError("Forbidden", {
-                    extensions: {
-                        code: "INTERNAL_ERROR",
-                        http: {
-                            status: 403
+                if (!isAdmin) {
+                    unlinkFile(filename);
+
+                    return new GraphQLError("Forbidden", {
+                        extensions: {
+                            code: "INTERNAL_ERROR",
+                            http: {
+                                status: 403
+                            }
                         }
+                    });
+                };
+
+                const id = await CategoryModel.findOne({ where: { category_name: "all" } }) as any;
+                if (category_id?.trim()) {
+                    const check = await CategoryModel.findOne({ where: { category_id } });
+                    if (!check) {
+                        category_id = id?.category_id;
                     }
-                });
-
-
+                } else {
+                    category_id = id?.category_id;
+                };
 
 
                 const find = await ProductModel.findOne({ where: { product_name } }) as any;
                 if (find) {
                     find.price = price;
                     find.quantity += quantity;
+
+                    unlinkFile(filename);
                     find.save();
                     return {
                         msg: "ok",
                         data: find
                     }
                 };
-                const newData = await ProductModel.create({ product_name, price, measurement, quantity, category_id, img:filename });
+                const newData = await ProductModel.create({ product_name, price, measurement, quantity, category_id, img: filename });
                 return {
                     msg: "ok",
                     data: newData
@@ -139,32 +152,35 @@ export default {
         // edit product
         editproduct: async (_: undefined, { product_id, product_name, price, measurement, quantity, category_id, file }: ProductType, { token }: ContextType) => {
             try {
-console.log(file);
+                console.log(file);
 
-
-                let {filename, createReadStream}= await file;
-                filename=Date.now()+filename.replace(/\s/g, "");
-                const stream=createReadStream();
-                const out=createWriteStream(resolve("uploads", filename));
+                let { filename, createReadStream } = await file;
+                filename = Date.now() + filename.replace(/\s/g, "");
+                const stream = createReadStream();
+                const out = createWriteStream(resolve("uploads", filename));
                 stream.pipe(out);
-
 
 
                 const { isAdmin } = TokenHelper.verify(token) as any;
 
-                if (!isAdmin) return new GraphQLError("Forbidden", {
-                    extensions: {
-                        code: "INTERNAL_ERROR",
-                        http: {
-                            status: 403
-                        }
-                    }
-                });
+                if (!isAdmin) {
+                    unlinkFile(filename);
 
+                    return new GraphQLError("Forbidden", {
+                        extensions: {
+                            code: "INTERNAL_ERROR",
+                            http: {
+                                status: 403
+                            }
+                        }
+                    });
+                }
 
 
                 const find = await ProductModel.findOne({ where: { product_id } }) as any;
                 if (!find) {
+                    unlinkFile(filename);
+
                     return new GraphQLError("Notfound", {
                         extensions: {
                             code: "INTERNAL_ERROR",
@@ -174,7 +190,7 @@ console.log(file);
                         }
                     });
                 };
-                const newData = await ProductModel.update({ product_name, price, measurement, quantity, category_id, img:filename }, { where: { product_id } });
+                const newData = await ProductModel.update({ product_name, price, measurement, quantity, category_id, img: filename }, { where: { product_id } });
                 return {
                     msg: "ok",
                     data: newData
@@ -224,13 +240,13 @@ console.log(file);
                 };
 
 
-                if(find.img){
+                if (find.img) {
                     console.log("in 'if'");
-                    
-                //  unlinkSync("uploads/"+find.img);
+
+                    //  unlinkSync("uploads/"+find.img);
                     unlinkFile(find.img);
                     console.log(find.img);
-                    
+
                 };
 
                 await ProductModel.destroy({ where: { product_id } });

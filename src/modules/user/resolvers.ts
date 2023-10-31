@@ -3,9 +3,6 @@ import { UserType, ContextType } from "../../types";
 import TokenHelper from "../../lib/TokenHelper";
 import { UserModel } from "../../model";
 import crypto from "../../lib/crypto";
-import { createWriteStream } from "fs";
-import { resolve } from "path";
-import { GraphQLUpload } from "graphql-upload-ts";
 
 
 
@@ -16,16 +13,16 @@ export default {
         users: async (root: undefined, args: undefined, { token }: ContextType) => {
             try {
 
-                const { isAdmin } = TokenHelper.verify(token) as any;
+                // const { isAdmin } = TokenHelper.verify(token) as any;
 
-                if (!isAdmin) return new GraphQLError("Forbidden", {
-                    extensions: {
-                        code: "INTERNAL_ERROR",
-                        http: {
-                            status: 403
-                        }
-                    }
-                });
+                // if (!isAdmin) return new GraphQLError("Forbidden", {
+                //     extensions: {
+                //         code: "INTERNAL_ERROR",
+                //         http: {
+                //             status: 403
+                //         }
+                //     }
+                // });
 
 
 
@@ -87,34 +84,29 @@ export default {
     // mutation
     Mutation: {
         // signup
-        signup: async (root: undefined, { username, email, password, file }: UserType) => {
+        signup: async (root: undefined, { username, email, password }: UserType) => {
             try {
 
-console.log(username, file);
+console.log(username);
 
 
                 const check_username = await UserModel.findOne({ where: { username } });
                 const check_email = await UserModel.findOne({ where: { email } });
 
 
-                // upload file
-
-                let { filename, createReadStream } = await file;
-
-                // if (filename) {
-                filename = Date.now() + filename.replace(/\s/g, "");
-                const stream = createReadStream();
-                const out = createWriteStream(resolve("uploads", filename));
-                stream.pipe(out);
-
-                // }
-
-
 
                 if (check_email?.dataValues || check_username?.dataValues) {
 
+                    // return new GraphQLError(check_email ? "email already exist" : "username already", {
+                    //     extensions:{
+                    //         code:'INTERNAL_ERROR',
+                    //         http:{
+                    //             status:409
+                    //         }
+                    //     }
+                    // });
                     return {
-                        msg: check_email ? "email already exist" : "username already",
+                        msg: check_username ? "username already exist" : "email already exist",
                         data: null
                     }
                 };
@@ -124,7 +116,7 @@ console.log(username, file);
                 const hashpass = await crypto.hash(password);
 
                 const newUser = await UserModel.create({
-                    username, email, password: hashpass, img: filename
+                    username, email, password: hashpass
                 }) as any;
 
                 const { user_id, isAdmin }: { user_id: string, isAdmin: boolean } = newUser;
@@ -165,14 +157,17 @@ console.log(username, file);
                 const find = await UserModel.findOne({ where: { username, email } }) as any;
 
                 if (!find) {
-                    return new GraphQLError("notfound", {
-                        extensions: {
-                            code: 'INTERNAL_ERROR',
-                            http: {
-                                status: 404
-                            }
-                        }
-                    });
+                    return {
+                        msg: "user notfound  :("
+                    }
+                    // return new GraphQLError("notfound", {
+                    //     extensions: {
+                    //         code: 'INTERNAL_ERROR',
+                    //         http: {
+                    //             status: 404
+                    //         }
+                    //     }
+                    // });
                 };
 
                 await crypto.compare(password, find.password).then(err => {
@@ -300,8 +295,7 @@ console.log(username, file);
             }
         }
 
-    },
+    }
 
 
-    Upload: GraphQLUpload
 }

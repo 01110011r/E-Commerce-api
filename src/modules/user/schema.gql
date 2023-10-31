@@ -5,9 +5,9 @@ type Query{
 
 
 type Mutation{
-    signup(username:String!, email:String!, password:String!, isAdmin:Boolean, file:Upload!):Req
+    signup(username:String!, email:String!, password:String!, isAdmin:Boolean):Req
     signin(username:String!, email:String!, password:String!):Req
-    updateuser(username:String, email:String, password:String, file:Upload):Req
+    updateuser(username:String, email:String, password:String):Req
     deletuser(user_id:ID):Req
 }
 
@@ -18,7 +18,6 @@ type User{
     username:String
     email:String
     password:String
-    img:String
     isAdmin:Boolean
 }
 
@@ -30,6 +29,5 @@ type Req{
 
 scalar Any
 
-scalar Upload
 
  
