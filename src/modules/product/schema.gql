@@ -18,6 +18,7 @@ type Product{
     measurement:String
     quantity:Int
     category_id:ID
+    img:String
 }
 
 

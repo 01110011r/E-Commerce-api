@@ -8,7 +8,7 @@ export default {
         category: async (_: undefined, { category_id }: CategoryType) => {
             try {
                 console.log(category_id);
-                
+
                 const find = await CategoryModel.findOne({ where: { category_id }, include: ProductModel });
                 if (!find) return new GraphQLError("category notfound", {
                     extensions: {
@@ -19,7 +19,7 @@ export default {
                     }
                 });
                 console.log(find);
-                
+
                 return find;
             } catch (error: any) {
                 console.log(error.message);
@@ -39,9 +39,10 @@ export default {
         // categories
         categories: async () => {
             try {
-                
-                const find = await CategoryModel.findAll();
-                
+
+                const find = await CategoryModel.findAll({include:ProductModel});
+console.log(find);
+
                 return find;
             } catch (error: any) {
                 console.log(error.message);
@@ -80,15 +81,20 @@ export default {
                 });
 
                 const check = await CategoryModel.findOne({ where: { category_name } });
-                if (check) return new GraphQLError("already exists", {
-                    extensions: {
-                        code: "CONFLICT",
-                        http: {
-                            status: 409
+
+                if (check) {
+                    return new GraphQLError("already exists", {
+                        extensions: {
+                            code: "CONFLICT",
+                            http: {
+                                status: 409
+                            }
                         }
-                    }
-                });
+                    });
+                };
+
                 const newData = await CategoryModel.create({ category_name });
+
                 return {
                     msg: "ok",
                     data: newData
@@ -157,7 +163,7 @@ export default {
 
 
         // delet category
-        deletcategory: async (_: undefined, { category_id }: CategoryType, { token }:ContextType) => {
+        deletcategory: async (_: undefined, { category_id }: CategoryType, { token }: ContextType) => {
             try {
 
                 const { isAdmin } = TokenHelper.verify(token) as any;

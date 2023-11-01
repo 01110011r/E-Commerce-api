@@ -80,8 +80,10 @@ export default {
         // addproduct
         addproduct: async (_: undefined, { product_name, price, measurement, quantity, category_id, file }: ProductType, { token }: ContextType) => {
             try {
-                console.log(file);
-                console.log(product_name);
+                console.log(1,file);
+                console.log(2, product_name, price, measurement, quantity, category_id);
+                console.log(token);
+                
 
 
                 let { filename, createReadStream } = await file;
@@ -90,6 +92,7 @@ export default {
                 const out = createWriteStream(resolve("uploads", filename));
                 stream.pipe(out);
 
+                
 
                 const { isAdmin } = TokenHelper.verify(token) as any;
 
@@ -153,6 +156,8 @@ export default {
         editproduct: async (_: undefined, { product_id, product_name, price, measurement, quantity, category_id, file }: ProductType, { token }: ContextType) => {
             try {
                 console.log(file);
+
+
 
                 let { filename, createReadStream } = await file;
                 filename = Date.now() + filename.replace(/\s/g, "");

@@ -1,11 +1,11 @@
+import { Upload } from "graphql-upload-ts"
 
 export interface UserType {
     user_id: string,
     username: string,
     email: string,
     password: string,
-    isAdmin:Boolean,
-    file:any
+    isAdmin:Boolean
 };
 
 export interface ContextType{
