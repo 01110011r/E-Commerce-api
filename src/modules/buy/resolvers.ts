@@ -39,7 +39,11 @@ export default {
     Mutation: {
         addbuy: async (_: undefined, { product_id }: BuyType, { token }: ContextType) => {
             try {
+                console.log(product_id);
+                
                 const { user_id } = TokenHelper.verify(token) as any;
+                console.log(user_id);
+                
                 if (!user_id) return new GraphQLError("Unauthorized", {
                     extensions: {
                         code: "INTERNAL_ERROR",

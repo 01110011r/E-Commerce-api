@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
 import { UserType, ContextType } from "../../types";
 import TokenHelper from "../../lib/TokenHelper";
-import { UserModel } from "../../model";
+import { BuyProduct, ProductModel, UserModel } from "../../model";
 import crypto from "../../lib/crypto";
 
 
@@ -13,16 +13,16 @@ export default {
         users: async (root: undefined, args: undefined, { token }: ContextType) => {
             try {
 
-                // const { isAdmin } = TokenHelper.verify(token) as any;
+                const { isAdmin } = TokenHelper.verify(token) as any;
 
-                // if (!isAdmin) return new GraphQLError("Forbidden", {
-                //     extensions: {
-                //         code: "INTERNAL_ERROR",
-                //         http: {
-                //             status: 403
-                //         }
-                //     }
-                // });
+                if (!isAdmin) return new GraphQLError("Forbidden", {
+                    extensions: {
+                        code: "INTERNAL_ERROR",
+                        http: {
+                            status: 403
+                        }
+                    }
+                });
 
 
 
@@ -50,6 +50,8 @@ export default {
         // user
         user: async (root: undefined, args: undefined, { token }: ContextType) => {
             try {
+                console.log(1);
+                
                 const { user_id } = await TokenHelper.verify(token) as any;
                 if (!user_id) return new GraphQLError("Unauthenticated", {
                     extensions: {
@@ -59,7 +61,9 @@ export default {
                         }
                     }
                 });
-                const find = await UserModel.findOne({ where: { user_id } });
+                const find = await UserModel.findOne({ where: { user_id }, include:ProductModel });
+                console.log(find);
+                
                 return find
 
             } catch (error: any) {
@@ -157,23 +161,23 @@ console.log(username);
                 const find = await UserModel.findOne({ where: { username, email } }) as any;
 
                 if (!find) {
-                    return {
-                        msg: "user notfound  :("
-                    }
-                    // return new GraphQLError("notfound", {
-                    //     extensions: {
-                    //         code: 'INTERNAL_ERROR',
-                    //         http: {
-                    //             status: 404
-                    //         }
-                    //     }
-                    // });
+                    // return {
+                    //     msg: "user notfound  :("
+                    // }
+                    return new GraphQLError("notfound", {
+                        extensions: {
+                            code: 'INTERNAL_ERROR',
+                            http: {
+                                status: 404
+                            }
+                        }
+                    });
                 };
 
-                await crypto.compare(password, find.password).then(err => {
-                    console.log(err);
+              const check=await crypto.compare(password, find.password)
+                    console.log(check);
                     
-               if(err) return new GraphQLError("wrong password", {
+               if(!check) return new GraphQLError("wrong password", {
                 extensions: {
                     code: 'INTERNAL_ERROR',
                     http: {
@@ -181,7 +185,7 @@ console.log(username);
                     }
                 }
             });
-                });
+               
 
 
                 const token = await TokenHelper.sign({ user_id: find.user_id, username, email, isAdmin: find.isAdmin });
@@ -265,6 +269,8 @@ console.log(username);
         // delete user
         deletuser: async (root: undefined, { user_id }: UserType, { token }: ContextType) => {
             try {
+                console.log(1, token);
+                
                 const { user_id } = TokenHelper.verify(token) as any;
                 const find = await UserModel.findOne({ where: { user_id } });
                 if (!find) return new GraphQLError("notfound", {
@@ -275,6 +281,8 @@ console.log(username);
                         }
                     }
                 });
+                console.log(2, user_id);
+                
                 await UserModel.destroy({ where: { user_id } });
                 return {
                     msg: "ok",

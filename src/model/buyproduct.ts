@@ -18,6 +18,9 @@ BuyProduct.init(
         },
         product_id:{
             type:DataTypes.UUID
+        },
+        buyproduct_user_id_fkey:{
+            type:DataTypes.UUID
         }
     },
     {
