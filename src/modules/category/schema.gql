@@ -13,6 +13,6 @@ deletcategory(category_id:ID):Req
 type Category{
     category_id:ID
     category_name:String
-    products:[Product]
+    ProductModels:[Product]
 }
 

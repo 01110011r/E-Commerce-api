@@ -27,7 +27,7 @@ export default {
 
 
 
-                const data = await UserModel.findAll();
+                const data = await UserModel.findAll({include:ProductModel});
                 console.log(data);
 
 

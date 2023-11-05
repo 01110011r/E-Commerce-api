@@ -19,7 +19,7 @@ type User{
     email:String
     password:String
     isAdmin:Boolean
-    Products:[Product]
+    ProductModels:[Product]
 }
 
 
